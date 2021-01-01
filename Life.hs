@@ -29,7 +29,10 @@ candidates :: Board -> Board
 candidates board = foldr S.union board (borders <$> S.toList board)
 
 neighbors :: Board -> Cell -> Int
-neighbors b c = length $ S.intersection b (borders c)
+-- neighbors b c = length $ S.intersection b (borders c)
+neighbors b c = length $ filter memberB (S.toList (borders c))
+  where
+    memberB cell = S.member cell b
 
 spawn :: Board -> Cell -> Bool
 spawn b c = neighbors b c `elem`  spawnRule
@@ -48,7 +51,8 @@ next b = S.filter (lives b) (candidates b)
 
 printBoard :: Board -> Int -> Cell -> Cell -> String
 printBoard b g (x1,y1) (x2,y2) =
-  "GENERATTION: " ++ show g ++ "\n\n" ++
+  "GENERATTION: " ++ show g ++ "\n" ++
+  "LIVE CELLS: " ++ show (length b) ++ "\n" ++
   mconcat (printRow b x1 x2 <$> [y1..y2])
 
 printRow :: Board -> Integer -> Integer -> Integer -> String
