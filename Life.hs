@@ -78,6 +78,28 @@ generate (b,g) = do
 run :: Board -> IO ()
 run b = void $ generate (b, 0)
 
+-- move designs
+flipVertical :: Board -> Board
+flipVertical b =
+  let flipVals = mkFlipVals (minY b) (maxY b)
+      flipper = flipCellVertical flipVals
+  in mkBoard $ flipper <$> S.toList b
+
+mkFlipVals :: Integer -> Integer -> [(Integer, Integer)]
+mkFlipVals low hi = let vals = [low..hi] in zip vals (reverse vals)
+
+minY :: Board -> Integer
+minY b = minimum $ snd <$> S.toList b
+
+maxY :: Board -> Integer
+maxY b = maximum $ snd <$> S.toList b
+
+flipCellVertical :: [(Integer, Integer)] -> Cell -> Cell
+flipCellVertical vals (x,y) =
+  case lookup y vals of
+    Nothing -> (x,y)
+    Just y' -> (x,y')
+
 -- designs
 mkBoard :: [Cell] -> Board
 mkBoard = S.fromList
@@ -103,3 +125,15 @@ gosper = mkBoard [
   (35,3),(35,4),
   (36,3),(36,4)
                  ]
+copperHead :: Board
+copperHead = flipVertical $ mkBoard [
+  (2,1),(3,1),(6,1),(7,1),
+  (2,2),(3,2),(6,2),(7,2),
+  (1,3),(2,3),(3,3),(6,3),(7,3),(8,3),
+  (1,4),(2,4),(3,4),(6,4),(7,4),(8,4),
+  (1,6),(8,6),
+  (1,7),(4,7),(5,7),(8,7),
+  (2,8),(3,8),(4,8),(5,8),(6,8),(7,8),
+  (4,11),(5,11),
+  (4,12),(5,12)
+                     ]
